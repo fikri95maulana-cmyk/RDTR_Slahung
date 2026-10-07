@@ -558,7 +558,7 @@
     }
     return out;
   }
-  function popupHTML(res) {
+  function popupHTML(res, bodyMax) {
     const total = res.reduce((a, r) => a + r.feats.length, 0);
     const sec = res.map((r, idx) => {
       const m = r.meta, shown = r.feats.slice(0, 5);
@@ -570,7 +570,7 @@
       const first = r.feats[0], it = itemFor(m, first);
       return `<details class="pop-layer" ${idx < 3 ? 'open' : ''}><summary>${swatch(m, it)}<span>${esc(m.name)}</span><span class="c">${r.feats.length}</span></summary>${feats}${r.feats.length > shown.length ? `<div class="pop-more">+ ${r.feats.length - shown.length} objek lain di titik ini</div>` : ''}</details>`;
     }).join('');
-    return `<div class="pop-head">${total} objek pada ${res.length} layer</div><div class="pop-body">${sec}</div>`;
+    return `<div class="pop-head">${total} objek pada ${res.length} layer</div><div class="pop-body" style="max-height:${bodyMax}px">${sec}</div>`;
   }
 
   let measuring = false;
@@ -580,7 +580,14 @@
     const res = identify(e.latlng);
     if (!res.length) { hiLayer.clearLayers(); map.closePopup(); toast('Tidak ada objek pada titik ini'); return; }
     flash(res.flatMap((r) => r.feats.slice(0, 5).map((f) => ({ f, meta: r.meta }))));
-    L.popup({ maxWidth: 400, autoPanPadding: [30, 80], className: 'idpop' }).setLatLng(e.latlng).setContent(popupHTML(res)).openOn(map);
+    const sz = map.getSize();
+    const lg = $('#legendBox');
+    const rightPad = lg.hidden ? 70 : lg.offsetWidth + 34;
+    const bodyMax = Math.max(160, sz.y - 200);
+    L.popup({
+      maxWidth: Math.min(480, sz.x - 50), minWidth: Math.min(300, sz.x - 50), className: 'idpop', closeOnClick: false,
+      autoPanPaddingTopLeft: [24, 24], autoPanPaddingBottomRight: [mobile() ? 24 : rightPad, 96],
+    }).setLatLng(e.latlng).setContent(popupHTML(res, bodyMax)).openOn(map);
   });
   map.on('popupclose', () => hiLayer.clearLayers());
 
