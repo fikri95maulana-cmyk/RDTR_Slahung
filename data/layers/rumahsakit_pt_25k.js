@@ -1,0 +1,1 @@
+__L("rumahsakit_pt_25k",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"REMARK":"Rumah Sakit Khusus"},"geometry":{"type":"Point","coordinates":[111.41431,-8.03785]}},{"type":"Feature","properties":{"REMARK":"Rumah Sakit Khusus"},"geometry":{"type":"Point","coordinates":[111.42883,-7.97925]}}]});

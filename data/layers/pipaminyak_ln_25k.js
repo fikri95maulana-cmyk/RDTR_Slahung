@@ -1,0 +1,1 @@
+__L("pipaminyak_ln_25k",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"REMARK":"Pipa Saluran Bahan Bakar Minyak"},"geometry":{"type":"LineString","coordinates":[[111.41034,-8.01109],[111.41053,-8.01175]]}}]});

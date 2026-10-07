@@ -1,0 +1,1 @@
+__L("stasiunka_pt_satupeta",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"bt":"Jabatim","kodkod":"SLH","wadmkk":"Ponorogo","wadmpr":"Jawa Timur"},"geometry":{"type":"Point","coordinates":[111.4162,-8.03131]}}]});
