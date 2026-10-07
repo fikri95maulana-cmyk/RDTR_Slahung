@@ -1,0 +1,1 @@
+__L("kantorpos_pt_25k",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"REMARK":"Kantor Pos Lainnya","JNKPOS":999},"geometry":{"type":"Point","coordinates":[111.41431,-8.03849]}}]});

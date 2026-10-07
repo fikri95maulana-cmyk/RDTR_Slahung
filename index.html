@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WebGIS RDTR Kecamatan Slahung</title>
+<meta name="description" content="WebGIS Rencana Detail Tata Ruang (RDTR) Kecamatan Slahung, Kabupaten Ponorogo: peta dasar, tematik, kebencanaan, rencana tata ruang, dan hasil analisis spasial.">
+<meta name="theme-color" content="#0b1f3a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1f3a'/%3E%3Cpath d='M16 6 6 11.5l10 5.5 10-5.5z' fill='%2314b8a6'/%3E%3Cpath d='m6 16 10 5.5L26 16M6 20.5 16 26l10-5.5' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<div id="loader" role="status" aria-live="polite">
+  <div class="loader-card">
+    <div class="spinner"></div>
+    <strong>Memuat WebGIS RDTR Slahung…</strong>
+    <span>Menyiapkan peta dan katalog layer</span>
+  </div>
+</div>
+
+<header class="topbar">
+  <button id="btnMenu" class="icon-btn" aria-label="Tampilkan/sembunyikan panel layer" title="Panel layer"><svg class="i"><use href="#i-menu"/></svg></button>
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#14b8a6" fill-opacity=".18"/><path d="M16 5.5 6 11l10 5.5L26 11z" fill="#14b8a6"/><path d="m6 16 10 5.5L26 16M6 20.5 16 26l10-5.5" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="brand-text">
+      <h1>WebGIS RDTR Kecamatan Slahung</h1>
+      <p>Rencana Detail Tata Ruang · Kabupaten Ponorogo, Jawa Timur</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <label class="desa-pick" title="Zoom ke desa">
+      <svg class="i"><use href="#i-pin"/></svg>
+      <select id="desaSel" aria-label="Zoom ke desa"><option value="">Zoom ke desa…</option></select>
+    </label>
+    <button id="btnHome" class="icon-btn" title="Kembali ke Kecamatan Slahung" aria-label="Kembali ke tampilan awal"><svg class="i"><use href="#i-home"/></svg></button>
+    <button id="btnMeasure" class="icon-btn" title="Ukur jarak & luas" aria-label="Alat ukur"><svg class="i"><use href="#i-ruler"/></svg></button>
+    <button id="btnFull" class="icon-btn" title="Layar penuh" aria-label="Layar penuh"><svg class="i"><use href="#i-full"/></svg></button>
+    <button id="btnAbout" class="icon-btn" title="Tentang WebGIS" aria-label="Tentang"><svg class="i"><use href="#i-info"/></svg></button>
+  </div>
+</header>
+
+<div class="layout">
+  <div id="scrim" class="scrim" hidden></div>
+  <aside id="sidebar" aria-label="Panel layer">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="layers" role="tab">Katalog Layer</button>
+      <button class="tab" data-tab="active" role="tab">Layer Aktif <span id="actCount" class="badge">0</span></button>
+    </div>
+
+    <section id="tab-layers" class="tabpane active">
+      <div class="search">
+        <svg class="i"><use href="#i-search"/></svg>
+        <input id="layerSearch" type="search" placeholder="Cari layer, mis. banjir, jalan, RTRW…" autocomplete="off" aria-label="Cari layer">
+      </div>
+      <div class="list-tools">
+        <button id="btnExpand" class="link">Buka semua</button>
+        <button id="btnCollapse" class="link">Tutup semua</button>
+        <button id="btnClear" class="link danger">Matikan semua layer</button>
+      </div>
+      <div id="groups" class="groups"></div>
+      <p id="noResult" class="empty" hidden>Tidak ada layer yang cocok dengan pencarian.</p>
+    </section>
+
+    <section id="tab-active" class="tabpane">
+      <div id="activeList" class="active-list"></div>
+      <p id="noActive" class="empty">Belum ada layer aktif. Centang layer pada tab <b>Katalog Layer</b> untuk menampilkannya di peta.</p>
+    </section>
+  </aside>
+
+  <main class="mapwrap">
+    <div id="map" aria-label="Peta"></div>
+
+    <div id="basemapBox" class="floating basemap-box">
+      <button id="basemapBtn" class="fab" title="Ganti basemap" aria-expanded="false"><svg class="i"><use href="#i-layers"/></svg><span id="basemapName">Google Satelit</span></button>
+      <div id="basemapMenu" class="basemap-menu" hidden></div>
+    </div>
+
+    <div id="legendBox" class="floating legend-box" hidden>
+      <button id="legendHead" class="legend-head" aria-expanded="true"><span>Legenda</span><svg class="i"><use href="#i-down"/></svg></button>
+      <div id="legendBody" class="legend-body"></div>
+    </div>
+
+    <div id="measureBox" class="floating measure-box" hidden>
+      <div class="measure-head"><strong>Alat Ukur</strong><button id="mClose" class="x" aria-label="Tutup alat ukur">×</button></div>
+      <div class="seg">
+        <button id="mDist" class="on">Jarak</button><button id="mArea">Luas</button>
+      </div>
+      <div id="mResult" class="measure-result">Klik pada peta untuk mulai mengukur.</div>
+      <div class="measure-actions"><button id="mUndo" class="btn small">Urungkan titik</button><button id="mReset" class="btn small ghost">Hapus</button></div>
+      <p class="hint">Klik dua kali untuk menyelesaikan.</p>
+    </div>
+
+    <div id="coords" class="coords"><span id="cLat">Lat –</span><span id="cLng">Lng –</span><span id="cZoom">Zoom –</span></div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </main>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="x" aria-label="Tutup">×</button></div>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+
+<!-- ikon -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-full" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 16v-4.5M12 8h.01"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="m3 17.5 14.5-14.5a1.4 1.4 0 0 1 2 0l1 1a1.4 1.4 0 0 1 0 2L6 20.5a1.4 1.4 0 0 1-2 0l-1-1a1.4 1.4 0 0 1 0-2zM7.5 13l2.5 2.5M11 9.5l2.5 2.5M14.5 6l2.5 2.5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7zM2 12l10 5 10-5M2 17l10 5 10-5"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M21 16v3a2 2 0 0 1-2 2h-3"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+  </defs>
+</svg>
+
+<script src="assets/vendor/leaflet/leaflet.js"></script>
+<script src="data/catalog.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

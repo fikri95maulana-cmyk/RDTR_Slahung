@@ -1,0 +1,1 @@
+__L("niaga_pt_25k",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"REMARK":"Pusat Bisnis dan Perdagangan Lainnya"},"geometry":{"type":"Point","coordinates":[111.41421,-8.03589]}}]});

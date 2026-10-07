@@ -1,0 +1,1 @@
+__L("minerallogam_pt_satupeta",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"jnskom":"Tembaga","lbunsur":"Cu","kellgm":"Logam Dasar","lokasilgm":"Gunung Domasan, Slaung","statdiklgm":"Eksplorasi Rinci"},"geometry":{"type":"Point","coordinates":[111.394,-8.023]}}]});

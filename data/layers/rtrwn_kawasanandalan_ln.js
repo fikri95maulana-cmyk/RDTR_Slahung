@@ -1,0 +1,1 @@
+__L("rtrwn_kawasanandalan_ln",{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"rtrpns":"Kawasan Andalan Darat","nothpp":"PP No. 13 Tahun 2017"},"geometry":{"type":"LineString","coordinates":[[111.43742,-8.03776],[111.40589,-8.08117],[111.40344,-8.08349]]}}]});
